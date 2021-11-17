@@ -12,7 +12,7 @@ const Chat = () => {
 
   const fetchAllEvents = async () => {
     const response = await fetch(
-      "https://lego.abakus.no/api/v1/events/?date_after=2021-11-17"
+      "https://lego.abakus.no/api/v1/events/?date_after=2021-11-18"
     );
     const events = await response.json();
     return events;
