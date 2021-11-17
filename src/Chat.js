@@ -1,20 +1,39 @@
 import Header from "./components/Header";
 import Message from "./components/Message";
-import data from "./api";
 import "./App.css";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { useState } from "react";
-
-import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
+import { useEffect, useState } from "react";
 
 const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState(data);
-  const [startDate, setStartDate] = useState(new Date());
+  const [messages, setMessages] = useState([]);
+
+  const fetchAllEvents = async () => {
+    const response = await fetch(
+      "https://lego.abakus.no/api/v1/events/?date_after=2021-11-17"
+    );
+    const events = await response.json();
+    return events;
+  };
+
+  useEffect(() => {
+    const newMessageList = [];
+    fetchAllEvents().then((data) => {
+      for (let i = 0; i < 10; i++) {
+        const event = data.results[i];
+        const messageObj = {
+          from: event.title,
+          timestamp: event.startTime,
+          text: event.description,
+          me: false,
+        };
+        newMessageList.push(messageObj);
+      }
+      setMessages(newMessageList);
+    });
+  }, []);
 
   const renderMessages = () =>
     messages.map((msg, key) => (
@@ -30,7 +49,7 @@ const Chat = () => {
   const addNewMessage = () => {
     const newMessageObj = {
       from: "Peder",
-      timestamp: startDate,
+      timestamp: new Date(),
       text: newMessage,
       me: true,
     };
@@ -53,7 +72,7 @@ const Chat = () => {
         <Button
           variant="contained"
           onClick={addNewMessage}
-          disabled={newMessage.length < 1}
+          disabled={newMessage.length < 1 || newMessage.length * 2 >= 100}
           color="primary"
         >
           Send
@@ -63,12 +82,6 @@ const Chat = () => {
         variant="determinate"
         value={Math.min(newMessage.length * 2, 100)}
         style={{ marginBottom: "10px" }}
-      />
-      <DatePicker
-        selected={startDate}
-        showTimeSelect
-        dateFormat="Pp"
-        onChange={(date) => setStartDate(date)}
       />
     </>
   );

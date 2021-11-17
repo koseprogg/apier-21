@@ -4,8 +4,6 @@ import "./App.css";
 
 import { VictoryBar, VictoryChart, VictoryAxis } from "victory";
 
-import "react-datepicker/dist/react-datepicker.css";
-
 const Stats = () => {
   const countNumberOfMessages = (person) =>
     data.filter((message) => message.from === person).length;
